@@ -1,4 +1,23 @@
 sudo npm install -g @hyperledgendary/weftility
 
+export MICROFAB_CONFIG=$(cat config.json)
 
+docker run -e MICROFAB_CONFIG -p 8080:8080 ibmcom/ibp-microfab
 
+curl -s http://console.127-0-0-1.nip.io:8080/ak/api/v1/components | weft microfab -w ./_wallets -p ./_gateways -m ./_msp -f
+
+curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh | bash -s -- binary
+
+export PATH=$PATH:${PWD}/bin
+
+export FABRIC_CFG_PATH=${PWD}/config
+
+go mod init donate
+
+go get github.com/hyperledger/fabric-contract-api-go@v1.2.1
+
+go mod tidy
+
+GO111MODULE=on go mod vendor
+
+peer lifecycle chaincode package donate.tgz --path ./ --lang golang --label donate_1
